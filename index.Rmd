@@ -1,0 +1,75 @@
+---
+title: "About Me"
+author: "Hatie Liu"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    theme: yeti
+    highlight: tango
+    toc: false
+    toc_float: true
+    toc_depth: 2
+---
+
+![](https://media.licdn.com/dms/image/C4E03AQGdNbk5ILxIYA/profile-displayphoto-shrink_800_800/0/1612385044985?e=2147483647&v=beta&t=QebrbYLFQ_wHpkhjTqPUpQsbMIluDoOa0VSur8AR3Gs){width=200px}
+
+
+
+## About Me
+
+Hi, I'm Haitie Liu! I'm a data science student with a passion for using data to solve real-world problems.
+
+### Education
+
+- University of Washington, Bachelor's in Business Administration, 2018
+- Southern Methodist University, Masters in Data Science, 2024
+
+### Work Experience
+
+- HH Blockchain, Analyst, 2 years
+
+### Skills
+
+- Programming: Python, R, SQL
+- Machine Learning: Regression, Classification, Clustering, Natural Language Processing
+- Data Visualization: ggplot2, Tableau, R Shiny
+- Tools: Git, Jupyter Notebook, Visual Studio Code
+
+### Interests
+
+- Data Visualization: I enjoy creating engaging and informative visualizations that effectively communicate insights from data.
+- Natural Language Processing: I am interested in applying NLP techniques to analyze unstructured data, such as text data from social media or customer feedback.
+
+
+
+Thanks for taking the time to read my About Me page! Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/haitie-liu-a3b9ab122/) or [GitHub](https://github.com/haitieliu) to learn more about my work.
+
+
+
+<style>
+body {
+  background-color: #f7f7f7;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+h1 {
+  color: #0057e7;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+p {
+  line-height: 1.5;
+  margin-bottom: 1.5em;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+</style>
+
+
+

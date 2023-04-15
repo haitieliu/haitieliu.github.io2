@@ -1,0 +1,21 @@
+name: "my-website"
+always_allow_html: true
+navbar:
+  title: "My Website"
+  type: "inverse"
+  left:
+    - text: "About Me"
+      href: index.html
+      icon: fa-heart
+    - text: "Projects"
+      icon: fa-file
+      menu:
+      - text: "FritoLay-Attrition-Analysis"
+        href: Rscript.html
+      - text: "Budweiser-EDA"
+        href: BudweiserEDA1.html
+      - text: "PizzaBI-Project"
+        href: PizzaBI-Project.html
+output:
+  html_document:
+    theme: yeti
