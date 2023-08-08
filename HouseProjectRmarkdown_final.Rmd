@@ -312,7 +312,7 @@ rownames(data) <- NULL
 data2=data
 data2$SalePrice = log(data$SalePrice)
 model2 = lm(SalePrice~., data = data2)
-summary(model2)
+#summary(model2)
 residualPlot(model2)
 #write.csv(data2,file="logdata.csv",row.names = FALSE)
 
@@ -330,7 +330,7 @@ plot(model2)
 
 # Perform a forward/backward/stepwise selection in SAS
 
-We used SAS to run our selections
+![Dianostics](table.png)
 
 
 
@@ -341,7 +341,7 @@ model_formula= lm(SalePrice ~ MSZoning:GrLivArea+ LotArea:BsmtFinSF1+KitchenAbvG
                ScreenPorch  + MSZoning  + Neighborhood  + BldgType +
                MasVnrType + Foundation + Functional + GarageType  + SaleCondition+Fireplaces,
                data = data2)           
-summary(model_formula)
+
 
 
 
@@ -375,7 +375,7 @@ lm_predict_model= lm(SalePrice ~ MSSubClass + LotArea + OverallQual + OverallCon
                ScreenPorch + MoSold + MSZoning + LotConfig + Neighborhood + Condition1 + BldgType +
                Exterior1st + MasVnrType + Foundation + Functional + GarageType + PavedDrive + SaleCondition,
                data = data2)
-summary(lm_predict_model)
+#summary(lm_predict_model)
 
  
  
@@ -405,7 +405,7 @@ plot(lm_predict_model)
 
 model_formula <- lm( SalePrice ~ MSSubClass + LotFrontage + LotArea + LandSlope + OverallQual + OverallCond + YearBuilt + MasVnrArea + ExterQual + ExterCond + BsmtQual + BsmtCond + BsmtExposure + BsmtFinSF1 + BsmtFinSF2 + BsmtUnfSF + HeatingQC + X2ndFlrSF + LowQualFinSF + GrLivArea + FullBath + HalfBath + BedroomAbvGr + KitchenAbvGr + KitchenQual + TotRmsAbvGrd + Fireplaces + GarageArea + GarageQual + WoodDeckSF + OpenPorchSF + X3SsnPorch + ScreenPorch + PoolArea + MoSold + MSZoning + LandContour + LotConfig + Neighborhood + Condition1 + BldgType + HouseStyle + RoofMatl + Exterior1st + MasVnrType + Foundation + Functional + GarageType + SaleType + SaleCondition
 ,data = data2)
-summary(model_formula)
+#summary(model_formula)
 prediciton=predict(model_formula,newdata = test)
 
 test$SalePrice=exp(prediciton)
@@ -426,7 +426,7 @@ plot(model_formula)
 #stepwise
 
 model_formula <- lm(SalePrice ~ MSSubClass + LotFrontage + LotArea + LandSlope + OverallQual + OverallCond + YearBuilt + MasVnrArea + ExterQual + ExterCond + BsmtQual + BsmtCond + BsmtExposure + BsmtFinSF1 + BsmtFinSF2 + TotalBsmtSF + GrLivArea + BedroomAbvGr + KitchenAbvGr + KitchenQual + GarageArea + GarageQual + WoodDeckSF + OpenPorchSF + MoSold + MSZoning + LotConfig + Neighborhood + Condition1 + BldgType + Exterior1st + MasVnrType + Functional + GarageType + PavedDrive + SaleCondition,data = data2)
-summary(model_formula)
+#summary(model_formula)
 
 prediciton=predict(model_formula,newdata = test)
 
@@ -451,7 +451,7 @@ model_formula= lm(SalePrice ~ MSZoning:GrLivArea+ LotArea:BsmtFinSF1+KitchenAbvG
                ScreenPorch  + MSZoning  + Neighborhood  + BldgType +
                MasVnrType + Foundation + Functional + GarageType  + SaleCondition+Fireplaces,
                data = data2)           
-summary(model_formula)
+#summary(model_formula)
 
  
 prediciton=predict(model_formula,newdata = test)  
@@ -476,7 +476,7 @@ model_formula= lm(SalePrice ~ (YearBuilt:ScreenPorch+LotArea:TotalBsmtSF+Kitchen
                ScreenPorch  + MSZoning  + Neighborhood  + BldgType +
                MasVnrType + Foundation + Functional + GarageType  + SaleCondition+Fireplaces)^2,
                data = data2)  
-summary(model_formula)
+#summary(model_formula)
 
 prediciton=predict(model_formula,newdata = test)  
 
@@ -507,7 +507,7 @@ data= read.csv("https://raw.githubusercontent.com/anishkapeter/Stat1Project/main
 filtered_neighborhood = data %>% filter (Neighborhood %in% c('NAmes', 'Edwards', 'BrkSide'))
 
 filtered_neighborhood_model= lm(SalePrice ~ GrLivArea, data = filtered_neighborhood)
-summary(filtered_neighborhood_model)
+#summary(filtered_neighborhood_model)
 
 # Check Assumptions Model Without Indicator and Interaction Variable  
 plot(filtered_neighborhood_model)
@@ -530,7 +530,7 @@ filtered_data2 <- data3 %>% filter(Neighborhood %in% c('NAmes', 'Edwards', 'BrkS
 
 # build model on log data without interaction and indicator var
 filtered_data2_model = lm(SalePrice ~ GrLivArea, data = filtered_data2)
-summary(filtered_data2_model)
+#summary(filtered_data2_model)
 
 # Checking Assumptions 
 ggplot(filtered_data2,aes(x =GrLivArea , y =SalePrice )) +
@@ -561,7 +561,7 @@ SalePrice = 7.58437 + 0.59230 * GrlivArea
 ```{r}
 # Adding Indicator Variable 
 filtered_data2_model3 <- lm(SalePrice ~  GrLivArea + Neighborhood, data = filtered_data2)
-summary(filtered_data2_model3)
+#summary(filtered_data2_model3)
 
 ```
 
@@ -573,7 +573,7 @@ summary(filtered_data2_model3)
 filtered_data2_model2 <- lm(SalePrice ~  GrLivArea + GrLivArea * Neighborhood, data = filtered_data2)
 
 # Summary of the model
-summary(filtered_data2_model2)
+#summary(filtered_data2_model2)
 
 # Confidence intervals
 confint(filtered_data2_model2)
@@ -613,6 +613,9 @@ anova(filtered_data2_model)
 
 
 # Model with Interaction Summaries 
+
+For our best performing model we had #1288 on Kaggle, Yah!
+![Dianostics](kagglescore.png)
 
 #### For each neighborhood, the regression model predicting SalePrice using GrLivArea is given by:
 

@@ -18,6 +18,8 @@ navbar:
         href: PizzaBI-Project.html
       - text: "Housing Prediction Analysis"
         href: HouseProjectRmarkdown_final.html
+      - text: "Spotify Exploration"
+        href: https://haitieliu.shinyapps.io/RshinyAppMarkDown/
 output:
   html_document:
     theme: yeti
