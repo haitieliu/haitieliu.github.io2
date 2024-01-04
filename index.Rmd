@@ -24,9 +24,11 @@ Hi, I'm Haitie Liu! I'm a data science student with a passion for using data to 
 - University of Washington, Bachelor's in Business Administration, 2018
 - Southern Methodist University, Masters in Data Science, 2024
 
-### Work Experience
+### Related Experience
 
-- HH Blockchain, Analyst, 2 years
+- Graduate Study Researcher & Teaching Assistant, Analyst, 1 year
+
+
 
 ### Skills
 

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2023-07-30" />
+
+<title>HousePrice Prediction</title>
+
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-heart"></span>
+     
+    About Me
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-file"></span>
+     
+    Projects
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Rscript.html">FritoLay-Attrition-Analysis</a>
+    </li>
+    <li>
+      <a href="BudweiserEDA1.html">Budweiser-EDA</a>
+    </li>
+    <li>
+      <a href="PizzaBI-Project.html">PizzaBI-Project</a>
+    </li>
+    <li>
+      <a href="HouseProjectRmarkdown_final.html">Housing Prediction Analysis</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">HousePrice Prediction</h1>
+<h4 class="date">2023-07-30</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-necessary-packages-load-data."
+id="toc-load-necessary-packages-load-data.">Load necessary packages,
+load data.</a></li>
+<li><a
+href="#fill-missing-values-in-numeric-columns-with-knn-imputation"
+id="toc-fill-missing-values-in-numeric-columns-with-knn-imputation">Fill
+missing values in numeric columns with KNN imputation</a></li>
+<li><a
+href="#combine-training-and-test-data-together-for-easier-cleaning"
+id="toc-combine-training-and-test-data-together-for-easier-cleaning">combine
+training and test data together, for easier cleaning</a></li>
+<li><a
+href="#define-ordinal-columns-regroup-character-columns-and-apply-factor-encoding."
+id="toc-define-ordinal-columns-regroup-character-columns-and-apply-factor-encoding.">Define
+ordinal columns, regroup character columns and apply factor
+encoding.</a></li>
+<li><a href="#checking-colinearity-of-the-model"
+id="toc-checking-colinearity-of-the-model">Checking Colinearity of the
+model</a></li>
+<li><a href="#checking-for-redundency-deleting-noise-in-the-data"
+id="toc-checking-for-redundency-deleting-noise-in-the-data">Checking for
+redundency/ deleting noise in the data</a></li>
+<li><a href="#checking-assumption-for-regression-full-model"
+id="toc-checking-assumption-for-regression-full-model">Checking
+assumption for regression (full model)</a></li>
+<li><a
+href="#logging-saleprice-to-see-if-it-fix-the-clusterred-residuals"
+id="toc-logging-saleprice-to-see-if-it-fix-the-clusterred-residuals">Logging
+SalePrice to see if it fix the clusterred residuals</a></li>
+<li><a href="#perform-a-forwardbackwardstepwise-selection-in-sas"
+id="toc-perform-a-forwardbackwardstepwise-selection-in-sas">Perform a
+forward/backward/stepwise selection in SAS</a></li>
+<li><a href="#build-custom-regression-model-in-sas"
+id="toc-build-custom-regression-model-in-sas">Build custom regression
+model in SAS</a></li>
+<li><a href="#predition" id="toc-predition">Predition</a></li>
+<li><a
+href="#examen-relationship-in-sales-price-in-neighborhood-names-edwards-brkside"
+id="toc-examen-relationship-in-sales-price-in-neighborhood-names-edwards-brkside">Examen
+relationship in Sales price in neighborhood ‘NAmes’, ‘Edwards’,
+‘BrkSide’</a></li>
+<li><a href="#adding-indicator-variable"
+id="toc-adding-indicator-variable">Adding Indicator Variable</a></li>
+<li><a href="#adding-interaction-variables"
+id="toc-adding-interaction-variables">Adding interaction variables</a>
+<ul>
+<li><a href="#anova-analysis" id="toc-anova-analysis">Anova
+Analysis</a></li>
+</ul></li>
+<li><a href="#model-with-interaction-summaries"
+id="toc-model-with-interaction-summaries">Model with Interaction
+Summaries</a></li>
+</ul>
+</div>
+
+<hr />
+<div id="load-necessary-packages-load-data." class="section level1">
+<h1>Load necessary packages, load data.</h1>
+<pre class="r"><code>#load necessary packages:
+library(car)
+library(tidyverse)
+library(caret)
+library(multiUS)
+library(boot)
+library(ggplot2)
+library(ggpubr)
+library(readr)
+library(corrplot)
+library(olsrr)
+library(MASS)
+library(car)
+
+
+#Load Data
+
+data=read.csv(&#39;https://raw.githubusercontent.com/anishkapeter/Stat1Project/main/train.csv&#39;)</code></pre>
+</div>
+<div id="fill-missing-values-in-numeric-columns-with-knn-imputation"
+class="section level1">
+<h1>Fill missing values in numeric columns with KNN imputation</h1>
+<pre class="r"><code>numeric_cols &lt;- names(data)[sapply(data, is.numeric)]
+#colSums(is.na(data[,numeric_cols]))
+#mode(data$LotFrontage)
+
+
+categorical_cols &lt;- names(data)[sapply(data, is.character)]
+#length(categorical_cols)+length(numeric_cols)
+numeric_data &lt;- data[, numeric_cols]
+numeric_data_imputed &lt;- KNNimp(as.matrix(numeric_data))  # convert data frame to matrix for knnImpute
+data[numeric_cols] &lt;- numeric_data_imputed</code></pre>
+</div>
+<div id="combine-training-and-test-data-together-for-easier-cleaning"
+class="section level1">
+<h1>combine training and test data together, for easier cleaning</h1>
+<pre class="r"><code>url &lt;- &quot;https://github.com/anishkapeter/Stat1Project/blob/main/test.csv?raw=true&quot;
+test &lt;- read.csv(url)
+
+data_c &lt;- subset(data, select = -c(SalePrice))
+saleprice = data$SalePrice
+# Combine the data and test dataframes
+combined_data &lt;- rbind(data_c, test)</code></pre>
+</div>
+<div
+id="define-ordinal-columns-regroup-character-columns-and-apply-factor-encoding."
+class="section level1">
+<h1>Define ordinal columns, regroup character columns and apply factor
+encoding.</h1>
+<pre class="r"><code># Identify character columns
+
+
+
+combined_data$ExterCond &lt;- factor(combined_data$ExterCond, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$ExterCond &lt;- as.numeric(combined_data$ExterCond)
+combined_data$ExterQual &lt;- factor(combined_data$ExterQual, levels = c(&quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$ExterQual &lt;- as.numeric(combined_data$ExterQual)
+
+
+# First, ensure NA values are not treated as missing data
+combined_data$BsmtQual &lt;- addNA(combined_data$BsmtQual)
+combined_data$BsmtCond &lt;- addNA(combined_data$BsmtCond)
+combined_data$BsmtQual &lt;- factor(combined_data$BsmtQual, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$BsmtCond &lt;- factor(combined_data$BsmtCond, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$BsmtQual &lt;- as.numeric(combined_data$BsmtQual)
+combined_data$BsmtCond &lt;- as.numeric(combined_data$BsmtCond)
+
+
+
+# First, ensure NA values are not treated as missing data
+combined_data$GarageCond &lt;- addNA(combined_data$GarageCond)
+combined_data$GarageQual &lt;- addNA(combined_data$GarageQual)
+combined_data$GarageCond &lt;- factor(combined_data$GarageCond, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$GarageQual &lt;- factor(combined_data$GarageQual, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$GarageCond &lt;- as.numeric(combined_data$GarageCond)
+combined_data$GarageQual &lt;- as.numeric(combined_data$GarageQual)
+
+
+
+# Convert NA values to factor levels
+combined_data$PoolQC &lt;- addNA(combined_data$PoolQC)
+combined_data$FireplaceQu &lt;- addNA(combined_data$FireplaceQu)
+combined_data$HeatingQC &lt;- addNA(combined_data$HeatingQC)
+combined_data$KitchenQual &lt;- addNA(combined_data$KitchenQual)
+combined_data$BsmtExposure &lt;- addNA(combined_data$BsmtExposure)
+combined_data$PoolQC &lt;- factor(combined_data$PoolQC, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$FireplaceQu &lt;- factor(combined_data$FireplaceQu, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$HeatingQC &lt;- factor(combined_data$HeatingQC, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$KitchenQual &lt;- factor(combined_data$KitchenQual, levels = c(&quot;Po&quot;, &quot;Fa&quot;, &quot;TA&quot;, &quot;Gd&quot;, &quot;Ex&quot;))
+combined_data$BsmtExposure &lt;- factor(combined_data$BsmtExposure, levels = c(&quot;No&quot;, &quot;Mn&quot;, &quot;Av&quot;, &quot;Gd&quot;))
+combined_data$PoolQC &lt;- as.numeric(combined_data$PoolQC)
+combined_data$FireplaceQu &lt;- as.numeric(combined_data$FireplaceQu)
+combined_data$HeatingQC &lt;- as.numeric(combined_data$HeatingQC)
+combined_data$KitchenQual &lt;- as.numeric(combined_data$KitchenQual)
+combined_data$BsmtExposure &lt;- as.numeric(combined_data$BsmtExposure)
+
+
+
+# Convert NA values to factor levels
+combined_data$BsmtFinType1 &lt;- addNA(combined_data$BsmtFinType1)
+combined_data$BsmtFinType2 &lt;- addNA(combined_data$BsmtFinType2)
+combined_data$Fence &lt;- addNA(combined_data$Fence)
+combined_data$GarageFinish &lt;- addNA(combined_data$GarageFinish)
+combined_data$Alley &lt;- addNA(combined_data$Alley)
+
+#table(combined_data$Alley)
+
+combined_data$BsmtFinType1 &lt;- factor(combined_data$BsmtFinType1, levels = c(&quot;Unf&quot;, &quot;LwQ&quot;, &quot;Rec&quot;, &quot;BLQ&quot;, &quot;ALQ&quot;, &quot;GLQ&quot;))
+combined_data$BsmtFinType2 &lt;- factor(combined_data$BsmtFinType2, levels = c(&quot;Unf&quot;, &quot;LwQ&quot;, &quot;Rec&quot;, &quot;BLQ&quot;, &quot;ALQ&quot;, &quot;GLQ&quot;))
+combined_data$CentralAir &lt;- factor(combined_data$CentralAir, levels = c(&quot;N&quot;, &quot;Y&quot;))
+combined_data$Fence &lt;- factor(combined_data$Fence, levels = c(&quot;MnWw&quot;, &quot;GdWo&quot;, &quot;MnPrv&quot;, &quot;GdPrv&quot;))
+combined_data$GarageFinish &lt;- factor(combined_data$GarageFinish, levels = c(&quot;Unf&quot;, &quot;RFn&quot;, &quot;Fin&quot;))
+combined_data$Alley &lt;- factor(combined_data$Alley, levels = c(&quot;Grvl&quot;, &quot;Pave&quot;))
+combined_data$LotShape &lt;- factor(combined_data$LotShape, levels = c(&quot;Reg&quot;, &quot;IR1&quot;, &quot;IR2&quot;, &quot;IR3&quot;))
+combined_data$LandSlope &lt;- factor(combined_data$LandSlope, levels = c(&quot;Gtl&quot;, &quot;Mod&quot;, &quot;Sev&quot;))
+
+combined_data$BsmtFinType1 &lt;- as.numeric(combined_data$BsmtFinType1)
+combined_data$BsmtFinType2 &lt;- as.numeric(combined_data$BsmtFinType2)
+combined_data$CentralAir &lt;- as.numeric(combined_data$CentralAir)
+combined_data$Fence &lt;- as.numeric(combined_data$Fence)
+combined_data$GarageFinish &lt;- as.numeric(combined_data$GarageFinish)
+combined_data$Alley &lt;- as.numeric(combined_data$Alley)
+combined_data$LotShape &lt;- as.numeric(combined_data$LotShape)
+combined_data$LandSlope &lt;- as.numeric(combined_data$LandSlope)
+
+
+
+
+ordinal_cols &lt;- c(&#39;ExterQual&#39;, &#39;ExterCond&#39;, &#39;BsmtQual&#39;, &#39;BsmtCond&#39;, 
+                  &#39;GarageCond&#39;, &#39;GarageQual&#39;, &#39;PoolQC&#39;, &#39;FireplaceQu&#39;, 
+                  &#39;HeatingQC&#39;, &#39;KitchenQual&#39;, &#39;BsmtExposure&#39;, &#39;BsmtFinType1&#39;, 
+                &#39;BsmtFinType2&#39;, &#39;CentralAir&#39;, &#39;Fence&#39;,&#39;GarageFinish&#39;,&#39;Alley&#39;,&#39;LotShape&#39;,&#39;LandSlope&#39;)
+
+#table(data$ExterQual)
+
+
+combined_data[ordinal_cols] &lt;- lapply(combined_data[ordinal_cols], function(x) replace(x, is.na(x), 0))
+
+
+
+
+
+# Transform ordinal columns into factors and replace NA with 0
+
+#data[ordinal_cols] &lt;- lapply(data[ordinal_cols], function(x) {
+#  x &lt;- as.factor(x)
+#  levels(x) &lt;- c(levels(x), &quot;0&quot;)
+# x[is.na(x)] &lt;- &quot;0&quot;
+#  return(x)
+# })
+
+# Checking all character columns
+#colnames(data)[colSums(is.na(data)) &gt; 0]
+
+
+
+
+# Threshold for &#39;rare&#39; observations
+n &lt;- 10 
+
+# Loop through the character columns
+for (col_name in colnames(combined_data)[sapply(combined_data, is.character)]) {
+  # Convert rare observations to &#39;Other&#39;
+  combined_data[[col_name]] &lt;- ifelse(combined_data[[col_name]] %in% names(which(table(combined_data[[col_name]]) &lt; n)), &quot;Other&quot;, combined_data[[col_name]])
+  
+  # Convert column to factor
+  combined_data[[col_name]] &lt;- as.factor(combined_data[[col_name]])
+
+  # Add NA as a level if there are any NAs in the column
+  if(any(is.na(combined_data[[col_name]]))) {
+    combined_data[[col_name]] &lt;- addNA(combined_data[[col_name]])
+    
+  
+  }
+}
+
+#Deleting some columns
+#rare_level_factors &lt;- sapply(data2, function(x) is.factor(x) &amp;&amp; any(table(x) &lt;= 2))
+#print(names(data2)[rare_level_factors])
+
+
+#data$Electrical=as.character(data$Electrical)
+#data$Electrical[is.na(data$Electrical)] &lt;- &quot;Other&quot;
+#data$Electrical=as.factor(data$Electrical)
+#class(combined_data$Electrical)
+
+
+
+#data &lt;- data[,-which(names(data) == &quot;Utilities&quot;)]
+
+
+# No more missing values, ordinary variable has been factorized
+
+sum(is.na(combined_data))</code></pre>
+<pre><code>## [1] 330</code></pre>
+<pre class="r"><code>#table(data$MiscFeature)
+#table(data$Street)
+#table(data$Utilities)
+#table(data$Condition2)
+#table(data$MiscFeature)
+#table(data$Electrical)</code></pre>
+</div>
+<div id="checking-colinearity-of-the-model" class="section level1">
+<h1>Checking Colinearity of the model</h1>
+<pre class="r"><code>#Deleting &quot;TotalBsmtSF or X1stFlrSF&quot; , &quot;GarageCars or GarageArea&quot; , &quot;YearBuilt or GarageYearBuilt&quot; , &quot;Fireplaces&quot; or &quot;FireplacesQu&quot; , &quot;GarageCond&quot; or GarageQu&quot;,  &quot;PoolQC or PoolArea&quot;
+
+df_numeric &lt;- combined_data[sapply(combined_data, is.numeric)]
+
+# Compute the correlation matrix
+cor_matrix &lt;- cor(df_numeric, use = &quot;pairwise.complete.obs&quot;)
+
+# Create a correlation plot
+corrplot(cor_matrix, type = &quot;upper&quot;, order = &quot;hclust&quot;, 
+         tl.col = &quot;black&quot;, tl.srt = 45, tl.cex = 0.5)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code># Find pairs with high correlation
+high_corr_indices &lt;- findCorrelation(cor_matrix, cutoff = 0.7)
+
+# Get column names from indices
+high_corr_names &lt;- colnames(df_numeric)[high_corr_indices]
+
+# Print the column names
+print(high_corr_names)</code></pre>
+<pre><code>##  [1] &quot;OverallQual&quot; &quot;GarageCars&quot;  &quot;TotalBsmtSF&quot; &quot;YearBuilt&quot;   &quot;GrLivArea&quot;  
+##  [6] &quot;ExterQual&quot;   &quot;FireplaceQu&quot; &quot;BsmtFinSF1&quot;  &quot;GarageQual&quot;  &quot;BsmtFinSF2&quot; 
+## [11] &quot;PoolArea&quot;</code></pre>
+<p>Deleting “TotalBsmtSF or X1stFlrSF” , “GarageCars or GarageArea” ,
+“YearBuilt or GarageYearBuilt” , “Fireplaces” or “FireplacesQu” ,
+“GarageCond” or GarageQual” “PoolQC or PoolArea”, “BsmtFinSF1 or
+BsmtFinType1”， “BsmtFinSF2 or BsmtFinType2”</p>
+</div>
+<div id="checking-for-redundency-deleting-noise-in-the-data"
+class="section level1">
+<h1>Checking for redundency/ deleting noise in the data</h1>
+<p>Rare Observation provide very little information about the dependent
+variable and may cause noise in the data set.</p>
+<pre class="r"><code>table(combined_data$Street)</code></pre>
+<pre><code>## 
+## Grvl Pave 
+##   12 2907</code></pre>
+<pre class="r"><code>table(combined_data$Utilities)</code></pre>
+<pre><code>## 
+## AllPub  Other   &lt;NA&gt; 
+##   2916      1      2</code></pre>
+<pre class="r"><code>table(combined_data$Condition2)</code></pre>
+<pre><code>## 
+## Feedr  Norm Other 
+##    13  2889    17</code></pre>
+<pre class="r"><code>table(combined_data$MiscFeature)</code></pre>
+<pre><code>## 
+## Other  Shed  &lt;NA&gt; 
+##    10    95  2814</code></pre>
+<pre class="r"><code>combined_data &lt;- combined_data[, -which(names(combined_data) %in% c(&#39;X1stFlrSF&#39;, &#39;GarageCars&#39;, &#39;GarageYrBlt&#39;,&#39;FireplaceQu&#39;,&#39;GarageCond&#39;,&#39;PoolQC&#39;,&#39;BsmtFinType1&#39;,&#39;BsmtFinType2&#39; ,&#39;Street&#39;, &#39;Utilities&#39;, &#39;Condition2&#39;, &#39;MiscFeature&#39;, &#39;Alley&#39;,&#39;Fence&#39;))]
+
+
+#write.csv(data2,file = &#39;data2&#39;)
+#formula(model2)
+#colnames(data2[sapply(data2,is.numeric)])
+table(combined_data$Foundation)</code></pre>
+<pre><code>## 
+## BrkTil CBlock  Other  PConc   Slab  Stone 
+##    311   1235      5   1308     49     11</code></pre>
+</div>
+<div id="checking-assumption-for-regression-full-model"
+class="section level1">
+<h1>Checking assumption for regression (full model)</h1>
+<pre class="r"><code>data=combined_data[1:1460,]
+data$SalePrice=saleprice
+test = combined_data[1461:nrow(combined_data), ]
+
+
+
+
+model = lm(SalePrice ~., data = data)
+
+
+# residual plots / Histogram / Q-Q plot / Calculate Cook&#39;s distances /Create Residuals vs Leverage plot
+histogram(model$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>plot(model)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-7-2.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-7-3.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-7-4.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-7-5.png" width="672" /></p>
+<pre class="r"><code>#Look for influential observations
+
+#Looking at observation 1299,524, delete them in the data
+data= data[-c(1299,524),]
+rownames(data) &lt;- NULL
+#write.csv(data,file = &quot;train123&quot;)
+#colnames(data[sapply(combined_data, is.factor)])</code></pre>
+</div>
+<div id="logging-saleprice-to-see-if-it-fix-the-clusterred-residuals"
+class="section level1">
+<h1>Logging SalePrice to see if it fix the clusterred residuals</h1>
+<pre class="r"><code>data2=data
+data2$SalePrice = log(data$SalePrice)
+model2 = lm(SalePrice~., data = data2)
+#summary(model2)
+residualPlot(model2)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>#write.csv(data2,file=&quot;logdata.csv&quot;,row.names = FALSE)
+
+# Compare to model1(unlogged) , the residual plots forms a rather perfect random cloud formation which is ideal
+# Histogram
+res2= model2$residuals
+histogram(res2)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>plot(model2)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-8-3.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-8-4.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-8-5.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-8-6.png" width="672" /></p>
+</div>
+<div id="perform-a-forwardbackwardstepwise-selection-in-sas"
+class="section level1">
+<h1>Perform a forward/backward/stepwise selection in SAS</h1>
+<div class="figure">
+<img src="table.png" alt="" />
+<p class="caption">Dianostics</p>
+</div>
+</div>
+<div id="build-custom-regression-model-in-sas" class="section level1">
+<h1>Build custom regression model in SAS</h1>
+<pre class="r"><code>model_formula= lm(SalePrice ~ MSZoning:GrLivArea+ LotArea:BsmtFinSF1+KitchenAbvGr:GarageQual +GrLivArea:LotArea+ LotArea + OverallQual + OverallCond + YearBuilt  + BsmtExposure + BsmtFinSF1 +BsmtFinSF2 +HeatingQC+BsmtUnfSF + GrLivArea + HalfBath + KitchenAbvGr + KitchenQual + GarageArea + GarageQual + WoodDeckSF +
+               ScreenPorch  + MSZoning  + Neighborhood  + BldgType +
+               MasVnrType + Foundation + Functional + GarageType  + SaleCondition+Fireplaces,
+               data = data2)           </code></pre>
+</div>
+<div id="predition" class="section level1">
+<h1>Predition</h1>
+<pre class="r"><code>table(data$MSZoning)</code></pre>
+<pre><code>## 
+## C (all)      FV      RH      RL      RM    &lt;NA&gt; 
+##      10      65      16    1149     218       0</code></pre>
+<pre class="r"><code>table(test$MSZoning)</code></pre>
+<pre><code>## 
+## C (all)      FV      RH      RL      RM    &lt;NA&gt; 
+##      15      74      10    1114     242       4</code></pre>
+<pre class="r"><code>levels(test$MSZoning)[is.na(levels(test$MSZoning))] &lt;- &quot;RL&quot;
+
+
+table(data$Exterior1st )</code></pre>
+<pre><code>## 
+## AsbShng BrkFace CemntBd HdBoard MetalSd   Other Plywood  Stucco VinylSd Wd Sdng 
+##      20      50      60     222     220       7     108      24     515     206 
+## WdShing    &lt;NA&gt; 
+##      26       0</code></pre>
+<pre class="r"><code>table(test$Exterior1st )</code></pre>
+<pre><code>## 
+## AsbShng BrkFace CemntBd HdBoard MetalSd   Other Plywood  Stucco VinylSd Wd Sdng 
+##      24      37      65     220     230       6     113      18     510     205 
+## WdShing    &lt;NA&gt; 
+##      30       1</code></pre>
+<pre class="r"><code>levels(test$Exterior1st)[is.na(levels(test$Exterior1st))] &lt;- &quot;VinylSd&quot;
+
+table(data$Functional  )</code></pre>
+<pre><code>## 
+##  Maj1  Min1  Min2   Mod Other   Typ  &lt;NA&gt; 
+##    14    31    34    15     6  1358     0</code></pre>
+<pre class="r"><code>table(test$Functional  )</code></pre>
+<pre><code>## 
+##  Maj1  Min1  Min2   Mod Other   Typ  &lt;NA&gt; 
+##     5    34    36    20     5  1357     2</code></pre>
+<pre class="r"><code>levels(test$Functional )[is.na(levels(test$Functional ))] &lt;- &quot;Typ&quot;
+
+table(data$SaleType   )</code></pre>
+<pre><code>## 
+##   COD ConLD   CWD   New Other    WD  &lt;NA&gt; 
+##    43     9     4   120    15  1267     0</code></pre>
+<pre class="r"><code>table(test$SaleType   )</code></pre>
+<pre><code>## 
+##   COD ConLD   CWD   New Other    WD  &lt;NA&gt; 
+##    44    17     8   117    14  1258     1</code></pre>
+<pre class="r"><code>levels(test$SaleType  )[is.na(levels(test$SaleType  ))] &lt;- &quot;WD&quot;
+#Forward
+
+lm_predict_model= lm(SalePrice ~ MSSubClass + LotArea + OverallQual + OverallCond + YearBuilt + MasVnrArea + ExterQual +
+               BsmtQual + BsmtCond + BsmtExposure + BsmtFinSF1 + TotalBsmtSF + GrLivArea + HalfBath +
+               BedroomAbvGr + KitchenAbvGr + KitchenQual + GarageArea + GarageQual + WoodDeckSF +
+               ScreenPorch + MoSold + MSZoning + LotConfig + Neighborhood + Condition1 + BldgType +
+               Exterior1st + MasVnrType + Foundation + Functional + GarageType + PavedDrive + SaleCondition,
+               data = data2)
+#summary(lm_predict_model)
+
+ 
+ 
+prediciton=predict(lm_predict_model,newdata = test)
+
+
+test$SalePrice=exp(prediciton)
+Submission_F=test[,c(&quot;Id&quot;,&quot;SalePrice&quot;)]
+
+mean_sale_price &lt;- mean(Submission_F$SalePrice, na.rm = TRUE)
+Submission_F$SalePrice[is.na(Submission_F$SalePrice)] &lt;- mean_sale_price
+
+sum(is.na(prediciton))</code></pre>
+<pre><code>## [1] 17</code></pre>
+<pre class="r"><code>write.csv(Submission_F, file = &#39;Submission_F.csv&#39;, row.names = FALSE)
+
+
+
+plot(lm_predict_model$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>qqPlot(lm_predict_model)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre><code>## [1] 632 968</code></pre>
+<pre class="r"><code>histogram(lm_predict_model$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+<pre class="r"><code>plot(lm_predict_model)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-4.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-5.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-6.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-7.png" width="672" /></p>
+<pre class="r"><code>#Backward
+
+model_formula &lt;- lm( SalePrice ~ MSSubClass + LotFrontage + LotArea + LandSlope + OverallQual + OverallCond + YearBuilt + MasVnrArea + ExterQual + ExterCond + BsmtQual + BsmtCond + BsmtExposure + BsmtFinSF1 + BsmtFinSF2 + BsmtUnfSF + HeatingQC + X2ndFlrSF + LowQualFinSF + GrLivArea + FullBath + HalfBath + BedroomAbvGr + KitchenAbvGr + KitchenQual + TotRmsAbvGrd + Fireplaces + GarageArea + GarageQual + WoodDeckSF + OpenPorchSF + X3SsnPorch + ScreenPorch + PoolArea + MoSold + MSZoning + LandContour + LotConfig + Neighborhood + Condition1 + BldgType + HouseStyle + RoofMatl + Exterior1st + MasVnrType + Foundation + Functional + GarageType + SaleType + SaleCondition
+,data = data2)
+#summary(model_formula)
+prediciton=predict(model_formula,newdata = test)
+
+test$SalePrice=exp(prediciton)
+submission_Backward=test[,c(&quot;Id&quot;,&quot;SalePrice&quot;)]
+
+mean_sale_price &lt;- mean(submission_Backward$SalePrice, na.rm = TRUE)
+submission_Backward$SalePrice[is.na(submission_Backward$SalePrice)] &lt;- mean_sale_price
+
+sum(is.na(prediciton))</code></pre>
+<pre><code>## [1] 240</code></pre>
+<pre class="r"><code>write.csv(submission_Backward, file = &#39;submission_Backward.csv&#39;, row.names = FALSE)
+
+
+plot(model_formula$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-8.png" width="672" /></p>
+<pre class="r"><code>qqPlot(model_formula)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-9.png" width="672" /></p>
+<pre><code>## [1] 463 632</code></pre>
+<pre class="r"><code>histogram(model_formula$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-10.png" width="672" /></p>
+<pre class="r"><code>plot(model_formula)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-11.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-12.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-13.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-14.png" width="672" /></p>
+<pre class="r"><code>#stepwise
+
+model_formula &lt;- lm(SalePrice ~ MSSubClass + LotFrontage + LotArea + LandSlope + OverallQual + OverallCond + YearBuilt + MasVnrArea + ExterQual + ExterCond + BsmtQual + BsmtCond + BsmtExposure + BsmtFinSF1 + BsmtFinSF2 + TotalBsmtSF + GrLivArea + BedroomAbvGr + KitchenAbvGr + KitchenQual + GarageArea + GarageQual + WoodDeckSF + OpenPorchSF + MoSold + MSZoning + LotConfig + Neighborhood + Condition1 + BldgType + Exterior1st + MasVnrType + Functional + GarageType + PavedDrive + SaleCondition,data = data2)
+#summary(model_formula)
+
+prediciton=predict(model_formula,newdata = test)
+
+test$SalePrice=exp(prediciton)
+submission_stepwise=test[,c(&quot;Id&quot;,&quot;SalePrice&quot;)]
+
+mean_sale_price &lt;- mean(submission_stepwise$SalePrice, na.rm = TRUE)
+submission_stepwise$SalePrice[is.na(submission_stepwise$SalePrice)] &lt;- mean_sale_price
+
+sum(is.na(prediciton))</code></pre>
+<pre><code>## [1] 240</code></pre>
+<pre class="r"><code>write.csv(submission_stepwise, file = &#39;submission_stepwise.csv&#39;, row.names = FALSE)
+
+plot(model_formula$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-15.png" width="672" /></p>
+<pre class="r"><code>qqPlot(model_formula)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-16.png" width="672" /></p>
+<pre><code>## [1] 632 968</code></pre>
+<pre class="r"><code>histogram(model_formula$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-17.png" width="672" /></p>
+<pre class="r"><code>plot(model_formula)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-18.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-19.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-20.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-21.png" width="672" /></p>
+<pre class="r"><code>#Custom
+
+
+
+model_formula= lm(SalePrice ~ MSZoning:GrLivArea+ LotArea:BsmtFinSF1+KitchenAbvGr:GarageQual +GrLivArea:LotArea+ LotArea + OverallQual + OverallCond + YearBuilt  + BsmtExposure + BsmtFinSF1 +BsmtFinSF2 +HeatingQC+BsmtUnfSF + GrLivArea + HalfBath + KitchenAbvGr + KitchenQual + GarageArea + GarageQual + WoodDeckSF +
+               ScreenPorch  + MSZoning  + Neighborhood  + BldgType +
+               MasVnrType + Foundation + Functional + GarageType  + SaleCondition+Fireplaces,
+               data = data2)           
+#summary(model_formula)
+
+ 
+prediciton=predict(model_formula,newdata = test)  
+
+test$SalePrice=exp(prediciton)
+submission_Cust=test[,c(&quot;Id&quot;,&quot;SalePrice&quot;)]
+
+mean_sale_price &lt;- mean(submission_Cust$SalePrice, na.rm = TRUE)
+submission_Cust$SalePrice[is.na(submission_Cust$SalePrice)] &lt;- mean_sale_price
+
+sum(is.na(prediciton))</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>write.csv(submission_Cust, file = &#39;submission_Cust.csv&#39;, row.names = FALSE)
+
+plot(model_formula)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-22.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-23.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-24.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-25.png" width="672" /></p>
+<pre class="r"><code>plot(model_formula$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-26.png" width="672" /></p>
+<pre class="r"><code>histogram(model_formula$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-10-27.png" width="672" /></p>
+<pre class="r"><code>#trial2
+
+model_formula= lm(SalePrice ~ (YearBuilt:ScreenPorch+LotArea:TotalBsmtSF+KitchenAbvGr:GarageQual +GrLivArea:LotArea+ LotArea + OverallQual + OverallCond + YearBuilt  + BsmtExposure + BsmtFinSF1 +BsmtFinSF2 +HeatingQC+BsmtUnfSF + GrLivArea + HalfBath + KitchenAbvGr + KitchenQual + GarageArea + GarageQual + WoodDeckSF +
+               ScreenPorch  + MSZoning  + Neighborhood  + BldgType +
+               MasVnrType + Foundation + Functional + GarageType  + SaleCondition+Fireplaces)^2,
+               data = data2)  
+#summary(model_formula)
+
+prediciton=predict(model_formula,newdata = test)  </code></pre>
+<pre><code>## Warning in predict.lm(model_formula, newdata = test): prediction from a
+## rank-deficient fit may be misleading</code></pre>
+<pre class="r"><code>test$SalePrice=exp(prediciton)
+submission_Cust=test[,c(&quot;Id&quot;,&quot;SalePrice&quot;)]
+
+mean_sale_price &lt;- mean(submission_Cust$SalePrice, na.rm = TRUE)
+submission_Cust$SalePrice[is.na(submission_Cust$SalePrice)] &lt;- mean_sale_price
+
+sum(is.na(prediciton))</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>write.csv(submission_Cust, file = &#39;submission_Cust.csv&#39;, row.names = FALSE)</code></pre>
+</div>
+<div
+id="examen-relationship-in-sales-price-in-neighborhood-names-edwards-brkside"
+class="section level1">
+<h1>Examen relationship in Sales price in neighborhood ‘NAmes’,
+‘Edwards’, ‘BrkSide’</h1>
+<pre class="r"><code>options(scipen = 999)
+library(dplyr)
+library(ggplot2)
+
+data= read.csv(&quot;https://raw.githubusercontent.com/anishkapeter/Stat1Project/main/train.csv&quot;)
+
+# Model without Interaction Variable 
+filtered_neighborhood = data %&gt;% filter (Neighborhood %in% c(&#39;NAmes&#39;, &#39;Edwards&#39;, &#39;BrkSide&#39;))
+
+filtered_neighborhood_model= lm(SalePrice ~ GrLivArea, data = filtered_neighborhood)
+#summary(filtered_neighborhood_model)
+
+# Check Assumptions Model Without Indicator and Interaction Variable  
+plot(filtered_neighborhood_model)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-1.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-2.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-3.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-4.png" width="672" /></p>
+<pre class="r"><code>histogram(filtered_neighborhood_model$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-5.png" width="672" /></p>
+<pre class="r"><code>ggplot(filtered_neighborhood,aes(x =GrLivArea , y =SalePrice )) + 
+  geom_point() +
+  ggtitle(&quot;ScatterPlot of SalePrice vs GrLivArea&quot;) </code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-6.png" width="672" /></p>
+<pre class="r"><code># Residual plot clustered, using log-log method to transform the dataset
+
+# Log log Transform to data 
+data3=data
+data3$SalePrice = log(data$SalePrice)
+data3$GrLivArea = log(data$GrLivArea)
+
+# filter the logged data to only include the 3 neighborhoods of interest
+filtered_data2 &lt;- data3 %&gt;% filter(Neighborhood %in% c(&#39;NAmes&#39;, &#39;Edwards&#39;, &#39;BrkSide&#39;))
+
+# build model on log data without interaction and indicator var
+filtered_data2_model = lm(SalePrice ~ GrLivArea, data = filtered_data2)
+#summary(filtered_data2_model)
+
+# Checking Assumptions 
+ggplot(filtered_data2,aes(x =GrLivArea , y =SalePrice )) +
+  geom_point()+ggtitle(&quot;ScatterPlot of Log(SalePrice) vs Log(GrLivArea)&quot;) + 
+  xlab(&quot;Log(GrLivArea)&quot;) +
+  ylab(&quot;Log(SalePrice)&quot;)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-7.png" width="672" /></p>
+<pre class="r"><code>hist(filtered_data2_model$residuals)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-8.png" width="672" /></p>
+<pre class="r"><code>plot(filtered_data2_model)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-9.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-10.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-11.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-12.png" width="672" /></p>
+<pre class="r"><code># Confidence Interval for Log Model without Interaction or Indicator
+confint(filtered_data2_model)</code></pre>
+<pre><code>##                 2.5 %    97.5 %
+## (Intercept) 7.2744027 8.2323536
+## GrLivArea   0.5010272 0.6354552</code></pre>
+<pre class="r"><code>plot(filtered_data2$GrLivArea, filtered_data2$SalePrice, 
+     main=&quot;Scatterplot with Regression Line&quot;, 
+     xlab=&quot;Above grade (ground) living area square feet (GrLivArea)&quot;, 
+     ylab=&quot;Sale Price (SalePrice)&quot;, pch=19, frame=FALSE, col=&quot;blue&quot;)+
+  abline(filtered_data2_model, col=&quot;red&quot;)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-11-13.png" width="672" /></p>
+<pre><code>## integer(0)</code></pre>
+<div
+id="therefore-the-regression-model-predicting-saleprice-using-grlivarea-is"
+class="section level4">
+<h4>Therefore the regression model predicting SalePrice using GrlivArea
+is</h4>
+<p>SalePrice = 7.58437 + 0.59230 * GrlivArea</p>
+</div>
+</div>
+<div id="adding-indicator-variable" class="section level1">
+<h1>Adding Indicator Variable</h1>
+<pre class="r"><code># Adding Indicator Variable 
+filtered_data2_model3 &lt;- lm(SalePrice ~  GrLivArea + Neighborhood, data = filtered_data2)
+#summary(filtered_data2_model3)</code></pre>
+</div>
+<div id="adding-interaction-variables" class="section level1">
+<h1>Adding interaction variables</h1>
+<pre class="r"><code># Fit the model
+filtered_data2_model2 &lt;- lm(SalePrice ~  GrLivArea + GrLivArea * Neighborhood, data = filtered_data2)
+
+# Summary of the model
+#summary(filtered_data2_model2)
+
+# Confidence intervals
+confint(filtered_data2_model2)</code></pre>
+<pre><code>##                                    2.5 %     97.5 %
+## (Intercept)                    4.9207572  6.9050843
+## GrLivArea                      0.6788064  0.9604897
+## NeighborhoodEdwards            0.8235795  3.3635933
+## NeighborhoodNAmes              1.4002744  3.7593394
+## GrLivArea:NeighborhoodEdwards -0.4793353 -0.1206263
+## GrLivArea:NeighborhoodNAmes   -0.5134042 -0.1798447</code></pre>
+<pre class="r"><code># Residuals histogram
+histogram &lt;- ggplot(filtered_data2_model2, aes(x=residuals)) +
+  geom_histogram(binwidth=1, color=&quot;black&quot;, fill=&quot;white&quot;) +
+  theme_minimal() +
+  labs(x=&quot;Residuals&quot;, y=&quot;Frequency&quot;, title=&quot;Histogram of Residuals&quot;)
+
+# Model diagnostics
+plot_diag &lt;- plot(filtered_data2_model2, diagnostic = TRUE)</code></pre>
+<p><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-13-1.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-13-2.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-13-3.png" width="672" /><img src="HouseProjectRmarkdown_final_files/figure-html/unnamed-chunk-13-4.png" width="672" /></p>
+<pre class="r"><code># Model Coefficients
+model_coef &lt;- coef(filtered_data2_model2)</code></pre>
+<div id="anova-analysis" class="section level2">
+<h2>Anova Analysis</h2>
+<pre class="r"><code>#ANOVA for model with Neighborhood as Interaction Variable 
+anova(filtered_data2_model3)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"12.008430","3":"12.00843049","4":"312.21198","5":"0.000000000000000000000000000000000000000000000000002134713","_rn_":"GrLivArea"},{"1":"2","2":"1.980635","3":"0.99031774","4":"25.74767","5":"0.000000000032742330099256247448371442976267076119256671518","_rn_":"Neighborhood"},{"1":"379","2":"14.577260","3":"0.03846243","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>#ANOVA for model with Neighborhood as Indicator Variable 
+anova(filtered_data2_model2)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"12.0084305","3":"12.00843049","4":"324.814132","5":"0.00000000000000000000000000000000000000000000000000008071084","_rn_":"GrLivArea"},{"1":"2","2":"1.9806355","3":"0.99031774","4":"26.786948","5":"0.00000000001325421007251243926032893694078040880413027480245","_rn_":"Neighborhood"},{"1":"2","2":"0.6395096","3":"0.31975480","4":"8.648997","5":"0.00021252672451623961006293705988667852579965256154537200928","_rn_":"GrLivArea:Neighborhood"},{"1":"377","2":"13.9377504","3":"0.03697016","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>#ANOVA for model without Neighborhood  
+anova(filtered_data2_model)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"12.00843","3":"12.00843049","4":"276.316","5":"0.00000000000000000000000000000000000000000000004764799","_rn_":"GrLivArea"},{"1":"381","2":"16.55790","3":"0.04345904","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>1 - pf(68.02972973,2,377)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>1 - pf(8.641891892,2,377)</code></pre>
+<pre><code>## [1] 0.0002139754</code></pre>
+</div>
+</div>
+<div id="model-with-interaction-summaries" class="section level1">
+<h1>Model with Interaction Summaries</h1>
+<p>For our best performing model we had #1288 on Kaggle, Yah! <img
+src="kagglescore.png" alt="Dianostics" /></p>
+<div
+id="for-each-neighborhood-the-regression-model-predicting-saleprice-using-grlivarea-is-given-by"
+class="section level4">
+<h4>For each neighborhood, the regression model predicting SalePrice
+using GrLivArea is given by:</h4>
+</div>
+<div id="neighborhood-brkside" class="section level4">
+<h4>Neighborhood ‘BrkSide’:</h4>
+<p>logSalePrice = 5.91292 + 0.81965*logGrLivArea</p>
+<div id="interpretation-of-the-coefficients" class="section level5">
+<h5>Interpretation of the Coefficients</h5>
+<p>Every time the square footage of the living area doubles, there is an
+estimated multiplicative increase of 1.76497775436 (about 76.5%
+increase) in the median Sale Price.</p>
+<p>When the square footage of the living area is 0, the estimated median
+SalePrice 369.78435.</p>
+</div>
+<div id="interpretation-of-confidence-intervals" class="section level5">
+<h5>Interpretation of Confidence Intervals</h5>
+<p>Every time the square footage of the living area doubles, the
+estimated multiplicative increase in median Sales Price for Brookeside
+is between 1.60081478829 and 1.94597031156.</p>
+<p>When the square footage of the living area is 0., the estimated
+median Sale Price is between 137.10639085 and 997.332584908 in Brookside
+neighborhood.</p>
+</div>
+</div>
+<div id="neighborhood-names" class="section level4">
+<h4>Neighborhood ‘NAmes’:</h4>
+<p>logSalePrice = 7.74784 + 0.47303*logGrLivArea</p>
+<div id="interpretation-of-the-coefficients-1" class="section level5">
+<h5>Interpretation of the Coefficients</h5>
+<p>Every time the square footage of the living area doubles, there is an
+estimated multiplicative increase of 1.38802158181, (about 38.8%
+increase) in the median Sale Price.</p>
+<p>When the square footage of the living area is 0, the estimated median
+SalePrice 4879.16803655.</p>
+</div>
+<div id="interpretation-of-confidence-intervals-1"
+class="section level5">
+<h5>Interpretation of Confidence Intervals</h5>
+<p>When the square footage of the living area is 0, the estimated median
+SalePrice 4879.16803655 .</p>
+<p>When the square footage of the living area is 0, the estimated median
+Sale Price is between 556.146417272 and 42805.5779923 in North Ames
+neighborhood.</p>
+</div>
+</div>
+<div id="neighborhood-edwards" class="section level4">
+<h4>Neighborhood ‘Edwards’:</h4>
+<p>logSalePrice = 8.00651 + 0.51967 *logGrLivArea</p>
+<div id="interpretation-of-the-coefficients-2" class="section level5">
+<h5>Interpretation of the Coefficients</h5>
+<p>Every time the square footage of the living area doubles, there is an
+estimated multiplicative increase of 1.4336074105 (about 43.36%
+increase) in the median Sale Price.</p>
+<p>When the square footage of the living area is 0, the estimated median
+Sale Price 3000.42732748.</p>
+</div>
+<div id="confidence-intervals-and-interpretation"
+class="section level5">
+<h5>Confidence Intervals and Interpretation</h5>
+<p>When the square footage of the living area is 0, the estimated median
+Sale Price is between 312.416333335 and 28815.756004 for houses in the
+Edwards Neighborhood.</p>
+<p>Every time the square footage of the living area doubles, the
+estimated multiplicative increase in median Sales Price for Edwards
+Neighborhood is between 1.14827731299 and 1.78988066094.</p>
+<p>filtered_data2 library(ggplot2) filtered_neighborhood %&gt;%
+filter(Neighborhood == “BrkSide”) %&gt;% ggplot(aes(x=GrLivArea, y =
+SalePrice)) + geom_point( color = “steelblue”) + ggtitle(“Sale Price vs
+Living Area Sq.Ft in Brookside”) + xlab(“Square Footage of Living Area”)
++ ylab(“Sales Price in Dollars”)</p>
+<p>filtered_neighborhood %&gt;% filter(Neighborhood == “Edwards”) %&gt;%
+ggplot(aes(x=GrLivArea, y = SalePrice)) + geom_point( color =
+“steelblue”) + ggtitle(“Sale Price vs Living Area Sq.Ft in Edwards”) +
+xlab(“Square Footage of Living Area”) + ylab(“Sales Price in
+Dollars”)</p>
+<p>filtered_neighborhood %&gt;% filter(Neighborhood == “NAmes”) %&gt;%
+ggplot(aes(x=GrLivArea, y = SalePrice)) + geom_point(color =
+“steelblue”) + ggtitle(“Sale Price vs Living Area Sq.Ft in North Ames”)
++ xlab(“Square Footage of Living Area”) + ylab(“Sales Price in
+Dollars”)</p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
